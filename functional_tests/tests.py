@@ -1,9 +1,9 @@
-from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
 
-class NewVisitorTest(LiveServerTestCase):
+class NewVisitorTest(StaticLiveServerTestCase):
 
     def setUp(self):
         self.browser = webdriver.Firefox()
@@ -40,7 +40,7 @@ class NewVisitorTest(LiveServerTestCase):
                                512,
                                delta=5)
 
-    def _test_can_start_a_list_and_edit_it_later(self):
+    def test_can_start_a_list_and_edit_it_later(self):
         # Edith has heard about a cool new online to-do app. She goes to
         # check out its homepage
         self.browser.get(self.live_server_url)

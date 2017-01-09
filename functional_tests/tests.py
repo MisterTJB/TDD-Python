@@ -1,4 +1,5 @@
 import sys
+import time
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -11,9 +12,11 @@ class NewVisitorTest(StaticLiveServerTestCase):
         for arg in sys.argv:
             if 'liveserver' in arg:
                 cls.server_url = 'http://' + arg.split('=')[1]
+                cls.wait = 2
                 return
         super().setUpClass()
         cls.server_url = cls.live_server_url
+        cls.wait = 0.5
 
     @classmethod
     def tearDownClass(cls):
@@ -28,8 +31,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         self.browser.quit()
 
     def check_for_row_in_list_table(self, row_text):
-        import time
-        time.sleep(0.5)
+        time.sleep(self.wait)
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
         self.assertIn(row_text, [row.text for row in rows])
@@ -37,6 +39,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
     def test_layout_and_styling(self):
         # Edith goes to the homepage
         self.browser.get(self.server_url)
+        time.sleep(self.wait)
         self.browser.set_window_size(1024, 768)
 
         # She notices the input box is nicely centered
@@ -48,8 +51,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         # She starts a new list and sees the input is nicely centered there, too
         inputbox.send_keys('testing')
         inputbox.send_keys(Keys.ENTER)
-        import time
-        time.sleep(0.5)
+        time.sleep(self.wait)
         inputbox = self.browser.find_element_by_id('id_new_item')
         self.assertAlmostEqual(inputbox.location['x'] + inputbox.size['width'] / 2,
                                512,
@@ -79,8 +81,8 @@ class NewVisitorTest(StaticLiveServerTestCase):
         # page lists "1: Buy peacock feathers" as an item in a to-do
         # list table
         inputbox.send_keys(Keys.ENTER)
-        import time
-        time.sleep(1)
+
+        time.sleep(self.wait)
         edith_list_url = self.browser.current_url
         self.assertRegex(edith_list_url, '/lists/.+')
         self.check_for_row_in_list_table('1: Buy peacock feathers')
@@ -115,7 +117,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         inputbox.send_keys(Keys.ENTER)
 
         # Francis gets his own unique URL
-        time.sleep(1)
+        time.sleep(self.wait)
         francis_list_url = self.browser.current_url
         self.assertRegex(francis_list_url, '/lists/.+')
         self.assertNotEqual(francis_list_url, edith_list_url)

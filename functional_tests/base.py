@@ -15,7 +15,7 @@ class FunctionalTest(StaticLiveServerTestCase):
                 return
         super().setUpClass()
         cls.server_url = cls.live_server_url
-        cls.wait = 0.5
+        cls.wait = 1
 
     @classmethod
     def tearDownClass(cls):
